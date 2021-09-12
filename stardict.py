@@ -149,8 +149,8 @@ class StarDict (object):
     def match (self, word, limit = 10, strip = False):
         c = self.__conn.cursor()
         if not strip:
-            sql = (f'select id, word from stardict where word like ? and word == sw '
-                   f'order by LENGTH(word), word collate nocase limit ?;')
+            sql = (f'select id, word from stardict where word like ? and word == sw and frq < 10000'
+                   f' order by LENGTH(word), word collate nocase limit ?;')
             c.execute(sql, (word + '%', limit))
         else:
             sql = 'select id, word from stardict where sw like ? '
