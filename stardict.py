@@ -81,7 +81,8 @@ class StarDict (object):
         CREATE INDEX IF NOT EXISTS "sd_1" ON stardict (word collate nocase);
         '''
 
-        self.__conn = sqlite3.connect(self.__dbname, isolation_level = "IMMEDIATE")
+        # the db is opened for readonly, except doing db covertting, but it is done in same thread and closed.
+        self.__conn = sqlite3.connect(self.__dbname, isolation_level = "IMMEDIATE", check_same_thread=False)
         self.__conn.isolation_level = "IMMEDIATE"
 
         sql = '\n'.join([ n.strip('\t') for n in sql.split('\n') ])
@@ -148,13 +149,13 @@ class StarDict (object):
     def match (self, word, limit = 10, strip = False):
         c = self.__conn.cursor()
         if not strip:
-            sql = 'select id, word from stardict where word >= ? '
-            sql += 'order by word collate nocase limit ?;'
-            c.execute(sql, (word, limit))
+            sql = (f'select id, word from stardict where word like ? and word == sw '
+                   f'order by word collate nocase limit ?;')
+            c.execute(sql, (word + '%', limit))
         else:
-            sql = 'select id, word from stardict where sw >= ? '
+            sql = 'select id, word from stardict where sw like ? '
             sql += 'order by sw, word collate nocase limit ?;'
-            c.execute(sql, (stripword(word), limit))
+            c.execute(sql, (stripword(word) + '%', limit))
         records = c.fetchall()
         result = []
         for record in records:
