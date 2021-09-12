@@ -150,7 +150,7 @@ class StarDict (object):
         c = self.__conn.cursor()
         if not strip:
             sql = (f'select id, word from stardict where word like ? and word == sw '
-                   f'order by word collate nocase limit ?;')
+                   f'order by LENGTH(word), word collate nocase limit ?;')
             c.execute(sql, (word + '%', limit))
         else:
             sql = 'select id, word from stardict where sw like ? '
