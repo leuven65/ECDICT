@@ -1731,8 +1731,8 @@ class DictHelper (object):
             return False
         if len(word) == 1:
             x = ord(word)
-            if (x < ord('a')) and (x > ord('z')):
-                if (x < ord('A')) and (x > ord('Z')):
+            if (x < ord('a')) or (x > ord('z')):
+                if (x < ord('A')) or (x > ord('Z')):
                     return False
         if (' ' not in word) and ('-' not in word):
             if ('?' in word) or ('!' in word):
@@ -1787,7 +1787,7 @@ def convert_dict(dstname, srcname):
             if x <= 0:
                 data['collins'] = None
         elif isinstance(x, str) or isinstance(x, unicode):
-            if x == '' or x == '0':
+            if x in ('', '0'):
                 data['collins'] = None
         dst.register(word, data, False)
     dst.commit()
